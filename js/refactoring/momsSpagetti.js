@@ -1,4 +1,6 @@
-//Task:
+/* eslint-disable no-multi-str */
+/* eslint-disable quotes */
+// Task:
 // Create a refactored version of the following code at the bottom of this file using ES6 conventions
 // Also leave a commented section breifly outlining some of the techniques, style choice, and reasons for your refactoring choices
 // The refactored version of this code should be promise based and consider standard linting practices
@@ -83,7 +85,7 @@ const lyrics = {
 
 
 // REFACTOR THIS CODE //
-// This code assembles the above object into a string with the lyrics for Eminem's "lose Yourself". 
+// This code assembles the above object into a string with the lyrics for Eminem's "lose Yourself".
 // The result should look like https://www.google.ca/search?rlz=1C5CHFA_enCA764CA764&ei=4iFbWs_VG43CjwOJ465Q&q=lose+yourself+lyrics&oq=lose+yoursle&gs_l=psy-ab.3.0.0i10k1l10.6780.11717.0.12640.28.24.0.2.2.0.275.2686.4j13j2.20.0....0...1c.1.64.psy-ab..15.12.1403.0..0j0i67k1j0i131k1j0i131i67k1.234.XSGvMUvV4XY
 function momsSpagetti(lyrics) {
 
@@ -111,4 +113,39 @@ function momsSpagetti(lyrics) {
     return loseYourself;
 }
 
+
 // REFACTORED VERSION HERE //
+const momsSpagettiV2 = async (lyrics) => {
+    const response = await lyrics;
+    // If this were an actual fetch we would normally use the json method afterwards
+    // to parse the json object into a javascipt one
+    // const data = await response.json();
+
+    const { intro, choruses, refrain, refrainRepeat, ending } = response;
+    let loseYourself = intro;
+
+    for (const { chorus } of choruses) {
+        loseYourself += chorus + refrain.repeat(refrainRepeat);
+    }
+
+    loseYourself += ending;
+
+    return loseYourself;
+};
+
+const compareSpagetti = async (syncFn, asyncFn, lyrics) => {
+    const check = await asyncFn(lyrics) === syncFn(lyrics);
+    console.log('Strings match? >>', check);
+    return check;
+};
+
+
+compareSpagetti(momsSpagetti, momsSpagettiV2, lyrics);
+
+// This was quite fun for something so simple. I used destrucuting both to avoid continuously
+// referring to the response object (response.intro, response.refrain, etc.) and to make it more obvious
+// what structure the function is expecting for the lyrics object. I used a for-of loop to replace the
+// counter that the example function used to make the code less brittle and more flexible since it
+// will work for any number of choruses and will add whatever number of refrains are specified
+// in refrainRepeat. I wrote the compareSpagetti function as my test to make sure my output matched
+// the example. And finally I gave my code a pass with ESLint.
